@@ -470,6 +470,10 @@ body {
     overflow: hidden;
     position: relative;
     border-bottom: none;
+    /* Centraliza um ícone ou texto caso a imagem quebre */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Janela do navegador simulada */
@@ -481,8 +485,11 @@ body {
 
 .screen img {
     width: 100%;
-    height: auto;
-    transition: transform 5s ease-in-out; /* Velocidade da rolagem */
+    height: 100%; /* Mudamos de auto para 100% */
+    object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
+    object-position: top; /* Garante que o topo do site apareça primeiro */
+    display: block;
+    transition: transform 5s ease-in-out;
 }
 
 /* Efeito de rolagem ao passar o mouse */
@@ -490,13 +497,39 @@ body {
     transform: translateY(calc(-100% + 250px));
 }
 
-/* Informações do Projeto */
-.portfolio-info {
+/* 1. O GRID: Força as colunas a terem a mesma altura */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    align-items: stretch; /* Essencial: estica todos os cards da linha */
+}
+
+/* 2. O CARD: Precisa ser um Flex Container para o conteúdo interno esticar */
+.portfolio-item {
     background: var(--card);
-    padding: 25px;
-    border-radius: 0 0 15px 15px;
+    border-radius: 15px;
     border: 1px solid var(--border);
-    border-top: none;
+    transition: 0.4s;
+    display: flex;
+    flex-direction: column; /* Organiza Imagem e Texto em coluna */
+    height: 100%; /* Ocupa a altura total permitida pelo Grid */
+}
+
+/* 3. A IMAGEM: Mantém um tamanho fixo para não empurrar o resto */
+.mockup-container {
+    height: 220px; /* Altura fixa para a área da imagem */
+    overflow: hidden;
+    flex-shrink: 0; /* Impede que a imagem diminua se o texto for grande */
+    border-radius: 15px 15px 0 0;
+}
+
+/* 4. AS INFORMAÇÕES: A "mágica" para preencher o vazio */
+.portfolio-info {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Força esta div a crescer e ocupar todo o resto do card */
 }
 
 .portfolio-info h4 {
@@ -505,10 +538,27 @@ body {
     margin-bottom: 10px;
 }
 
+/* 5. O TEXTO: Espaço mínimo para manter o alinhamento */
 .portfolio-info p {
     font-size: 0.9rem;
     color: #888;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    flex-grow: 1; /* O texto "empurra" o que vem abaixo para o rodapé */
+}
+
+/* 6. O RODAPÉ DO CARD: Fica sempre colado embaixo */
+.tech-stack {
+    margin-top: auto; /* Empurra as tags para o fim do card */
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 15px;
+}
+
+/* Garante que o conjunto de tags e o link fiquem sempre no final */
+.tech-stack {
+    margin-top: auto; 
+    padding-top: 15px;
 }
 
 /* Tags de Tecnologia */
