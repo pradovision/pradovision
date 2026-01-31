@@ -492,9 +492,9 @@ body {
     transition: transform 5s ease-in-out;
 }
 
-/* Efeito de rolagem ao passar o mouse */
+/* Em vez de descer, a imagem apenas cresce levemente */
 .portfolio-item:hover .screen img {
-    transform: translateY(calc(-100% + 250px));
+    transform: scale(1.1); 
 }
 
 /* 1. O GRID: Força as colunas a terem a mesma altura */
@@ -518,10 +518,12 @@ body {
 
 /* 3. A IMAGEM: Mantém um tamanho fixo para não empurrar o resto */
 .mockup-container {
-    height: 220px; /* Altura fixa para a área da imagem */
+    background: #1a1a1a; /* Cor de fundo caso a imagem quebre */
+    height: 250px;
+    display: flex; /* Ajuda a centralizar o erro caso ocorra */
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    flex-shrink: 0; /* Impede que a imagem diminua se o texto for grande */
-    border-radius: 15px 15px 0 0;
 }
 
 /* 4. AS INFORMAÇÕES: A "mágica" para preencher o vazio */
@@ -595,10 +597,71 @@ body {
     gap: 12px;
 }
 
-/* Ajuste para imagens de logo no mockup */
+/* Substitua sua regra antiga por esta */
 .screen img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Se for um print da página inteira */
-    transition: transform 5s ease-in-out;
+    object-fit: cover;
+    transition: transform 0.5s ease; /* Transição mais rápida e suave */
+}
+
+/* Seção de Clientes */
+.clients {
+    padding: 60px 0;
+    background-color: var(--bg);
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.clients-title {
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Container do Slider */
+.logo-slider {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Trilho que segura as logos e faz a animação */
+.logo-track {
+    display: flex;
+    width: calc(250px * 8); /* Tamanho do item multiplicado pelo número de itens */
+    animation: scroll-logos 30s linear infinite;
+}
+
+.logo-item {
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+}
+
+.logo-item img {
+    max-width: 150px;
+    height: auto;
+    filter: grayscale(1) brightness(0.8); /* Deixa as logos cinzas para combinar com o site */
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+/* Quando passa o mouse, a logo ganha cor e destaque */
+.logo-item img:hover {
+    filter: grayscale(0) brightness(1);
+    opacity: 1;
+}
+
+/* Animação de Scroll */
+@keyframes scroll-logos {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-250px * 4)); } /* Move metade do trilho */
 }
