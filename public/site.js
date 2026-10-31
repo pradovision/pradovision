@@ -46,7 +46,6 @@
     const services={site:'Site ou landing page',sistema:'Sistema personalizado',automacao:'Automação ou integração',suporte:'Suporte e evolução',outro:'Ainda estou descobrindo'};
     const text=`Olá, Prado Vision! Meu nome é ${name}.\n\nTenho interesse em: ${services[service]||'Solução digital'}.\n\nMinha ideia: ${message}\n\nGostaria de conversar sobre uma proposta.`;
     const whatsapp=`https://wa.me/5545999614886?text=${encodeURIComponent(text)}`;
-    const opened=window.open(whatsapp,'_blank','noopener,noreferrer');
-    if(!opened)window.location.assign(whatsapp);
+    window.location.assign(whatsapp);
   });
 })();
