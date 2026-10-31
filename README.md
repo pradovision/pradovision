@@ -1,45 +1,59 @@
-# Prado Vision — Site & Hub 2.0
+# Prado Vision — Site Institucional + Prado Vision Hub (versão 3)
 
-Nova versão do site institucional (visual clean, dourado suave, animações discretas e responsividade) e base operacional do **Prado Vision Hub** (área autenticada para administrador e clientes).
+Identidade aprovada: **clean / off-white / dourado**, desenho editorial, animações discretas, navegação acessível, conteúdo que explica serviços, portfólio, processo, orçamento, FAQ e contato comercial. Base técnica preservada do Hub 2.0, com módulos de clientes, projetos, solicitações e autenticação individual.
 
-## Funcionalidades implementadas
+## O que está implementado
 
-- Site público: home, serviços, demonstrações conceituais de projetos, apresentação, metodologia, FAQ, contato WhatsApp, política de privacidade, sitemap e SEO básico.
-- Portal `/painel`: sessão segura, separação de papéis, painel de indicadores, cadastro de clientes, criação e atualização de projetos, solicitações de atendimento, troca de senha e auditoria no banco.
-- Cliente: autenticação individual, visualização somente de seus projetos/chamados, abertura de chamados.
-- Administrador: cadastra clientes, emite senhas temporárias aleatórias, gerencia projetos e status de chamados.
-- Segurança: cookies `HttpOnly`, `Secure` em produção, `SameSite=Strict`, token CSRF por sessão, sessões com hash no PostgreSQL, hash de senhas scrypt, validação e parametrização SQL, checagem de origem, rate limit básico, CSP restritiva, HSTS, headers antiframe e prevenção de acesso a arquivos de configuração.
+### Site público
+- Página inicial com 4 serviços e explicações detalhadas, 4 diferenciais, 2 demonstrações visuais de aplicações (ilustrativas, sem divulgar dados de clientes), 5 etapas do projeto, informações transparentes e 14 perguntas frequentes pesquisáveis.
+- Formulário comercial que monta uma mensagem no navegador e abre WhatsApp (sem banco de dados ou envio a servidor Prado Vision). Verifique o número no arquivo `public/site.js` antes de publicar: foi mantido o WhatsApp comercial do site antigo, **(45) 99961-4886**, ainda não reconfirmado.
+- Efeitos leves no mouse e na rolagem, reduzidos automaticamente com a preferência `prefers-reduced-motion`.
+- SEO técnico básico, sitemap, robots e política de privacidade. Nenhum dado fictício de entregas, depoimentos ou avaliação é anunciado.
+- **Marca oficial**: o servidor expõe a imagem original que já está no repositório principal (`img/logo_prado_vision.png`) no caminho interno `/marca-original`. O navegador retira o fundo preto da imagem *apenas para exibi-la* sobre fundo claro. A marca não é substituída por um símbolo inventado. Se copiar este projeto fora do repositório original, inclua o arquivo no caminho `img/logo_prado_vision.png`; sem ele, aparece um fallback tipográfico temporário.
 
-**Atenção:** o site público é funcional mesmo sem PostgreSQL. O portal só funciona com DB e credenciais de bootstrap; sem isso, todas as rotas privadas ficam indisponíveis. Não existe senha padrão.
+### Prado Vision Hub
+- Login com conta administrativa e contas de clientes; sessão armazenada no banco PostgreSQL; painel individual com projetos, etapas, progresso e solicitações; administração de clientes e chamados; mudança de senha e auditoria.
+- A base funcional do Hub **não é um ERP completo**, sistema financeiro, emissão fiscal, contratos, monitoramento 24 h ou central de notificações. Esses serviços não estão implementados. Configurações e testes reais de banco de dados são obrigatórios antes de uso por clientes.
 
-## Variáveis de ambiente (Railway)
+## Rodar localmente
 
-1. Criar um projeto independente chamado Prado Vision, criar serviço Node a partir deste repositório e adicionar PostgreSQL no mesmo projeto.
-2. No serviço web adicionar `DATABASE_URL` com **referência à variável privada** do PostgreSQL (`${{Postgres.DATABASE_URL}}`, adaptando o nome do serviço).
-3. Adicionar `NODE_ENV=production`.
-4. Para criar a primeira conta administrativa: `ADMIN_EMAIL` com e-mail corporativo e `ADMIN_BOOTSTRAP_PASSWORD` com senha forte de 16 caracteres ou mais. É criada **somente uma conta** na inicialização, caso ainda não exista qualquer administrador. **Apagar ADMIN_BOOTSTRAP_PASSWORD da configuração após confirmar a criação** e definir imediatamente a senha individual de uso.
-5. Conectar `pradovision.com.br` e `www.pradovision.com.br` no domínio do serviço quando aprovado. Ajustar DNS conforme os valores gerados pelo Railway e proteger via Cloudflare WAF.
-6. Ativar MFA nas contas GitHub, Railway, registrador e Cloudflare, configurar backups de PostgreSQL, alertas e monitoramento; revisar política LGPD antes de coletar dados reais.
-
-## Desenvolvimento local
+Requisitos: Node.js 20+ e npm.
 
 ```bash
 npm install
+npm run check
+npm test
 npm start
 ```
 
-`http://localhost:3000` apresenta o site; `http://localhost:3000/painel` mostra a área de clientes; `/health` retorna saúde do servidor. Sem PostgreSQL, o portal exibe mensagem de configuração pendente.
+- Site: `http://localhost:3000/`
+- Portal: `http://localhost:3000/painel`
+- Healthcheck: `http://localhost:3000/health`
+- Sem PostgreSQL, o site funciona e o Hub recusa operações privadas (estado seguro; não há senha de demonstração).
 
-## Segurança e limites
+## Publicação isolada de produção
 
-- O rate limit em memória cobre uma instância e **não substitui** rate limiting distribuído no WAF.
-- O login atual utiliza senhas fortes, scrypt e sessão em Postgres; **MFA no portal ainda não implementado**. Recomenda-se MFA externo com Cloudflare Access ou evolução do módulo antes de operações sensíveis.
-- A criação de clientes retorna senha temporária para o administrador copiar uma vez. Enviar por canal seguro e pedir alteração no primeiro acesso.
-- Não há sistema de e-mail transacional, faturamento, contratos, integração de pagamentos, monitoramento de servidores de clientes ou notificações push implementados; estes são módulos futuros e exigem requisitos, integrações e testes específicos.
-- Os mockups do portfólio são **conceituais**; não são capturas de clientes nem métricas reais.
-- A segurança absoluta não é possível. Revisão de dependências, pentest, controle de acesso por camada e backups periódicos são necessários antes de uso operacional com dados importantes.
-- Antes de ligar DNS de produção, confirmar eventual serviço de e-mail existente (MX, SPF, DKIM, DMARC) para não interromper mensagens corporativas.
+1. **Preserve a branch atual de produção e os bancos existentes.** Crie novo projeto de hospedagem para Prado Vision e ambiente `staging`. Não misture projetos dos clientes da Prado Vision.
+2. Inclua `img/logo_prado_vision.png` junto com o código (o arquivo já existe no repositório GitHub original). Verifique se o nome e as maiúsculas/minúsculas correspondem.
+3. Para o site público, execute o serviço Node pelo comando `npm start` com `NODE_ENV=production` e `PORT` fornecida pelo provedor.
+4. Para ativar o Hub, adicione PostgreSQL exclusivo, `DATABASE_URL` via referência privada de variável do provedor e **confirme backups restauráveis e política de retenção**.
+5. Bootstrap do primeiro admin: configure `ADMIN_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` forte (16+ caracteres) em variáveis privadas. A conta é criada somente se não existir administrador. Retire `ADMIN_BOOTSTRAP_PASSWORD` da infraestrutura imediatamente depois da criação. **Nunca insira a senha nos arquivos ou no GitHub.**
+6. Antes da exposição pública do Hub, adote MFA em contas operacionais, WAF/limite de tentativas, TLS e validação independente de autenticação, permissões e segurança da aplicação. O **MFA interno do Hub não está implementado**; considere protegê-lo com controle de acesso adicional ou não habilitá-lo até a implementação e a homologação.
+7. Após testes, conecte `pradovision.com.br`, `www.pradovision.com.br` e HTTPS. Configure DNS no registrador ou Cloudflare conforme o provedor. **Antes de trocar nameservers, confira os registros MX/SPF/DKIM/DMARC** para preservar e-mail.
+8. Valide TLS/certificado, cabeçalhos CSP/HSTS (HSTS só habilitado na aplicação com `NODE_ENV=production`), WAF, rate limit distribuído, monitoramento/alertas, LGPD, performance, responsividade, backups e procedimentos de recuperação.
 
-## Preservação de versões
+## Limites de segurança
 
-Publicar inicialmente por branch independente e domínio de homologação; não sobrescrever a branch principal até avaliação do visual e validação das funcionalidades. Não reutilizar banco dos projetos dos clientes.
+- Nenhum site conectado à internet é totalmente invulnerável. A proteção exige operação contínua.
+- Medidas atuais incluem CSP, cabeçalhos anti-frame, `nosniff`, query parametrizada, cookies `HttpOnly` e `SameSite=Strict`, hash `scrypt`, token CSRF, checagem de origem e rate limit local em memória.
+- O limitador local não substitui rate limiting distribuído e proteção de borda. Quando usar múltiplas instâncias, centralize essas medidas na infraestrutura.
+- O portal ainda não tem MFA interno, recuperação de senha self-service, alertas por e-mail, autorização granular por projeto para administradores, nem testes de invasão independentes. Por isso não declare o sistema pronto para dados críticos até homologação.
+- `ADMIN_BOOTSTRAP_PASSWORD` nunca deve ser exposta publicamente nem compartilhada em conversas.
+
+## Testes e validação
+
+`npm test` executa testes de rotas públicas, proteção de caminhos e arquivos internos, verificação de origem, estado seguro sem banco, hash de senhas e existência de serviços, privacidade e FAQ. `npm run check` verifica sintaxe dos scripts. **Testes com PostgreSQL real, navegador visual, acessibilidade, segurança dinâmica e domínio público ainda precisam ser feitos no ambiente de homologação.**
+
+## Alterações e autoria
+
+Código e conteúdo do projeto institucional foram desenvolvidos para a Prado Vision. As telas de sistemas no portfólio são **ilustrações de possibilidades**, não fotografias de clientes ou resultados comerciais medidos. Cases identificados, nomes, logotipos e avaliações só devem aparecer com autorização.
