@@ -116,9 +116,16 @@ const server=http.createServer(async(req,res)=>{commonHeaders(res);let url;try{u
  if(url.pathname==='/'||url.pathname==='/index.html')return serveFile(req,res,'index.html');
  if(url.pathname==='/painel'||url.pathname==='/painel/')return serveFile(req,res,'painel.html');
  if(url.pathname==='/privacidade')return serveFile(req,res,'privacidade.html');
+ if(url.pathname==='/marca-original') {
+  const officialLogo=path.join(__dirname,'img','logo_prado_vision.png');
+  try {const stat=await fs.promises.stat(officialLogo);if(!stat.isFile())return error(res,404,'Marca indisponível');
+    res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff'});
+    if(req.method==='HEAD')return res.end();return fs.createReadStream(officialLogo).pipe(res);
+  }catch{return error(res,404,'Marca indisponível');}
+ }
  if(url.pathname==='/robots.txt')return serveFile(req,res,'robots.txt');
  if(url.pathname==='/sitemap.xml')return serveFile(req,res,'sitemap.xml');
  return serveFile(req,res,decodeURIComponent(url.pathname));
- }catch(e){console.error('Request failed:',e.code||e.message);return error(res,e.message==='TOO_LARGE'?413:500,'Não foi possível concluir a operação');}});
+ }catch(e){console.error('Request failed:',e.code||e.message);return error(res,e.message==='TOO_LARGE'?413:e.message==='INVALID_JSON'?400:500,'Não foi possível concluir a operação');}});
 if(require.main===module){server.listen(PORT,'0.0.0.0',()=>console.log(`Prado Vision listening on ${PORT}`));initDb();}
 module.exports={server,promiseHash,verifyHash};
