@@ -49,34 +49,4 @@
     const opened=window.open(whatsapp,'_blank','noopener,noreferrer');
     if(!opened)window.location.assign(whatsapp);
   });
-  // A marca oficial está no repositório original. Esta função remove apenas a área preta
-  // do PNG para sua aplicação em fundo claro, sem trocar seu monograma por uma logo inventada.
-  const targets=[...document.querySelectorAll('img[data-official-logo]')];
-  if (targets.length) {
-    const source=new Image();source.decoding='async';source.src='/marca-original';
-    source.onload=()=>{
-      try {
-        const canvas=document.createElement('canvas');canvas.width=source.naturalWidth;canvas.height=source.naturalHeight;
-        const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)return;
-        context.drawImage(source,0,0);const image=context.getImageData(0,0,canvas.width,canvas.height);const data=image.data;
-        let minX=canvas.width,minY=canvas.height,maxX=0,maxY=0,points=0;
-        for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
-          const i=(y*canvas.width+x)*4; const r=data[i],g=data[i+1],b=data[i+2];
-          const amount=Math.max(r,g,b);let alpha=Math.min(255,Math.max(0,(amount-25)*5));
-          if(r<g*0.90 || g<b*0.90) alpha=0;
-          data[i+3]=Math.min(data[i+3],alpha);
-          if(alpha>150){points++;if(x<minX)minX=x;if(y<minY)minY=y;if(x>maxX)maxX=x;if(y>maxY)maxY=y;}
-        }
-        if(points<120 || maxX<=minX || maxY<=minY)return;
-        context.putImageData(image,0,0);
-        const padding=Math.ceil(Math.max(maxX-minX,maxY-minY)*.028);
-        const x=Math.max(0,minX-padding),y=Math.max(0,minY-padding),w=Math.min(canvas.width-x,maxX-minX+padding*2),h=Math.min(canvas.height-y,maxY-minY+padding*2);
-        const crop=document.createElement('canvas');crop.width=w;crop.height=h;
-        crop.getContext('2d').drawImage(canvas,x,y,w,h,0,0,w,h);
-        const output=crop.toDataURL('image/png');
-        const icon=document.querySelector('link[rel="icon"]');if(icon){icon.href=output;icon.type='image/png';}
-        for(const target of targets){target.src=output;target.closest('.brand-symbol,.showcase-glass-inner')?.classList.add('has-logo');}
-      }catch{/* Preserve accessible fallback if canvas is unavailable. */}
-    };
-  }
 })();
