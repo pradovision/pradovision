@@ -1,0 +1,14 @@
+{
+  "name": "prado-vision-platform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Prado Vision — site público e portal seguro de projetos",
+  "type": "commonjs",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check server.js && node --check public/site.js && node --check public/painel.js"
+  },
+  "dependencies": { "pg": "8.16.3" }
+}
