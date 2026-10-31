@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /painel
+Disallow: /api/
+Sitemap: https://pradovision.com.br/sitemap.xml
